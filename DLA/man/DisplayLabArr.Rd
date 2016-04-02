@@ -9,14 +9,16 @@ DisplayLabArr(label.array, sl.dim = 2, foldername = "Images",
   border.col = NA)
 }
 \arguments{
-\item{label.array}{Label array to be displayed.}
+\item{label.array}{Label array to be displayed. \emph{label.array} must be a 3D array or a matrix.}
 
-\item{sl.dim}{The dimension that will be used for slicing. The default is 2nd dimension.}
+\item{sl.dim}{The dimension that will be used for slicing. The default is 2nd dimension. Ignore
+if \emph{label.array} is a matrix.}
 
 \item{foldername}{Name of the folder that will contain the result images.}
 
 \item{filename_pre}{The prefix for the filename of result images. A result image will 
-have name \emph{filename_pre.n.jpg} where \emph{n} is the slice index.}
+have name \emph{filename_pre.n.jpg} where \emph{n} is the slice index. If \emph{label.array} is 
+a matrix, the result image is named \emph{filename_pre.jpg}.}
 
 \item{bg.index}{The logical matrix of the same size as \emph{label.array} specifying the 
 background. Background cells have value TRUE and non-background cells have

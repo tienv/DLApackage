@@ -6,6 +6,6 @@ License: GPL-3
 Title: Display Label Array
 Description: This package display 3D label array slice-by-slice.
 LazyData: true
-Suggests: knitr, rmarkdown 
+Suggests: knitr, rmarkdown, testthat 
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1

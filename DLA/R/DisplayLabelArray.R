@@ -39,11 +39,13 @@ color2D <- function(x, cellcolors, border, xlab ="", ylab ="", ...)
 #'
 #' Display 3d label array slice by slice, different labels will have different colors.
 #'
-#' @param label.array Label array to be displayed.
-#' @param sl.dim The dimension that will be used for slicing. The default is 2nd dimension.
+#' @param label.array Label array to be displayed. \emph{label.array} must be a 3D array or a matrix.
+#' @param sl.dim The dimension that will be used for slicing. The default is 2nd dimension. Ignore
+#' if \emph{label.array} is a matrix.
 #' @param foldername Name of the folder that will contain the result images.
 #' @param filename_pre The prefix for the filename of result images. A result image will 
-#' have name \emph{filename_pre.n.jpg} where \emph{n} is the slice index.
+#' have name \emph{filename_pre.n.jpg} where \emph{n} is the slice index. If \emph{label.array} is 
+#' a matrix, the result image is named \emph{filename_pre.jpg}.
 #' @param bg.index The logical matrix of the same size as \emph{label.array} specifying the 
 #' background. Background cells have value TRUE and non-background cells have
 #' value FALSE. All the background cells will be display with one common color specified
@@ -64,6 +66,10 @@ color2D <- function(x, cellcolors, border, xlab ="", ylab ="", ...)
 DisplayLabArr <- function(label.array, sl.dim = 2, foldername="Images", filename_pre="Image",
                          bg.index = NA, bg.col = "black", border.col=NA)
 {
+  if (!is.na(bg.index)) stopifnot(dim(bg.index)==dim(label.array))
+  stopifnot(sl.dim %in% c(1,2,3))
+  if (!is.array(label.array)) stop("label.array must be a matrix or 3D array")
+  if (length(dim(label.array))>3) stop("label.array must be a matrix or 3D array")
   block = unique(c(label.array))
   col.vector = sample(rainbow(length(block)))
   color = array("black",dim(label.array))
@@ -74,24 +80,35 @@ DisplayLabArr <- function(label.array, sl.dim = 2, foldername="Images", filename
     color[bg.index] = bg.col
   }
   dir.create(foldername)
-  for (sl in 1:dim(label.array)[sl.dim])
+  if (is.matrix(label.array)) 
   {
-    filename = paste(filename_pre,".",sl,".jpg",sep="")
+    filename = paste(filename_pre,".jpg",sep="")
     jpeg(paste(foldername,filename,sep="/"))
-    if (sl.dim == 1)
-      color2D(x=label.array[sl,,],cellcolors=color[sl,,],border=border.col,
-                      xlab=paste("Number of clusters in slice and in total: ",length(unique(c(color[sl,,]))),
-                                 ";  ", length(block)), ylab="")
-    if (sl.dim == 2)    
-      color2D(x=label.array[,sl,],cellcolors=color[,sl,],border=border.col,
-                    xlab=paste("Number of clusters in slice and in total: ",length(unique(c(color[,sl,]))),
-                               ";  ", length(block)),ylab = "")
-    if (sl.dim == 3)    
-      color2D(x=label.array[,,sl],cellcolors=color[,,sl],border=border.col,
-                      xlab=paste("Number of clusters in slice and in total: ",length(unique(c(color[,,sl]))),
-                                 ";  ", length(block)),ylab = "")
+    color2D(x=label.array,cellcolors=color,border=border.col,
+            xlab=paste("Number of clusters: ",length(unique(c(color))),
+                       ";  ", length(block)), ylab="")
     dev.off()
+  } else {
+    for (sl in 1:dim(label.array)[sl.dim])
+    {
+      filename = paste(filename_pre,".",sl,".jpg",sep="")
+      jpeg(paste(foldername,filename,sep="/"))
+      if (sl.dim == 1)
+        color2D(x=label.array[sl,,],cellcolors=color[sl,,],border=border.col,
+                xlab=paste("Number of clusters in slice and in total: ",length(unique(c(color[sl,,]))),
+                           ";  ", length(block)), ylab="")
+      if (sl.dim == 2)    
+        color2D(x=label.array[,sl,],cellcolors=color[,sl,],border=border.col,
+                xlab=paste("Number of clusters in slice and in total: ",length(unique(c(color[,sl,]))),
+                           ";  ", length(block)),ylab = "")
+      if (sl.dim == 3)    
+        color2D(x=label.array[,,sl],cellcolors=color[,,sl],border=border.col,
+                xlab=paste("Number of clusters in slice and in total: ",length(unique(c(color[,,sl]))),
+                           ";  ", length(block)),ylab = "")
+      dev.off()
+    }
   }
+  
 }
 
 
